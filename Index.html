@@ -7,64 +7,74 @@
     <link rel="stylesheet" href="./style.css">
     <title>Document</title>
 </head>
-<body>
+<body class="body">
     <main class="lib">
         <article class="books">
             <section class="books__fav favorite">
-                <h2 class="favorite__title title"></h2>
+                <h2 class="favorite__title title">Любимые книги</h2>
                 <div class="favorite__container container">
                     <!--Книги будут генерироваться при получении данных от сервера-->
                     <div class="favorite__book book">
-                        <h3 class="book__title"></h3>
-                        <button class="book__btn btn change-btn">Ред.</button>
-                        <button class="book__btn btn done-btn">Прочитана</button>
-                        <button class="book__btn btn read-btn">Читать</button>
-                        <button class="book__btn btn del-btn">Х</button>
+                        <h3 class="book__title">Первая книга</h3>
+                        <div class="book__btns">
+                            <button class="book__btn btn change-btn">Ред.</button>
+                            <button class="book__btn btn done-btn">Прочитана</button>
+                            <button class="book__btn btn read-btn">Читать</button>
+                            <button class="book__btn btn del-btn">Х</button>
+                        </div>
                     </div>
                     <p class="favorite__drop-area drop-area">Drop down area</p>
                 </div>
             </section>
             <section class="books__list list">
-                <h2 class="list__title title"></h2>
+                <h2 class="list__title title">Список книг</h2>
                 <div class="list__container container">
                     <!--Книги будут генерироваться при получении данных от сервера-->
                     <div class="list__book book">
-                        <h3 class="book__title"></h3>
-                        <button class="book__btn btn change-btn">Ред.</button>
-                        <button class="book__btn btn done-btn">Прочитана</button>
-                        <button class="book__btn btn read-btn">Читать</button>
-                        <button class="book__btn btn del-btn">Х</button>
+                        <h3 class="book__title">Вторая книга</h3>
+                        <div class="book__btns">
+                            <button class="book__btn btn change-btn">Ред.</button>
+                            <button class="book__btn btn done-btn">Прочитана</button>
+                            <button class="book__btn btn read-btn">Читать</button>
+                            <button class="book__btn btn del-btn">Х</button>
+                        </div>
                     </div>
                     <p class="list__drop-area drop-area">Drop down area</p>
                 </div>
             </section>
             <section class="books__add add">
-                <h2 class="add__title title"></h2>
+                <h2 class="add__title title">Добавить книгу</h2>
                 <div class="add__form form">
-                    <input type="radio" name="form" id="download" class="form__radio download">
-                    <input type="radio" name="form" id="selfload" class="form__radio selfload">
-                    <p class="form__text"></p>
-                    <div class="form__selfload">
-                        <input type="text" class="form__name">
-                        <input type="text" class="form__desc">
+                    <div class="form__radio-wr">
+                        <input type="radio" name="form" id="download" class="form__radio download" checked>
+                        <label for="download">Загрузить книгу</label>
+                    </div>
+                    <div class="form__radio-wr">
+                        <input type="radio" name="form" id="selfload" class="form__radio selfload">
+                        <label for="selfload">Написать самому</label>
+                    </div>
+                    <p class="form__text">Название:</p>
+                    <div class="form__selfload disable">
+                        <input type="text" class="form__name" placeholder="Заголовок">
+                        <textarea type="text" class="form__desc" placeholder="Описание" rows="3"></textarea>
                     </div>
                     <div class="form__download">
-                        <input type="text" class="form__name">
+                        <input type="text" class="form__name" placeholder="Заголовок">
                         <input type="file" class="form__file">
                     </div>
-                    <button class="form__btn btn"></button>
+                    <button class="form__btn btn">Загрузить</button>
 
                 </div>
             </section>
         </article>
         <aside class="view-area">
             <!--Код вставляется когда нажата кнопка "читать книгу"-->
-            <h1 class="view-area__title title"></h1>
-            <p class="view-area__text"></p>
+            <h1 class="view-area__title title">TEXT1</h1>
+            <p class="view-area__text">fdjkighjhg</p>
             <!--Код вставляется когда нажата кнопка "редактировать книгу"-->
             <input type="text" class="view-area__change-headline">
-            <input type="text" class="view-area__change-text">
-            <button class="viev-area__btn">Сохранить</button>
+            <textarea type="text" class="view-area__change-text" rows="8"></textarea>
+            <button class="viev-area__btn btn">Сохранить</button>
         </aside>
     </main>
     <script src="./script.js"></script>
