@@ -228,6 +228,8 @@ function retriveFormValueSelfload(event) {
         file: file.value
     }
 
+    sendRequest("POST", requestURL, values)
+
     dataValues.push(values)
     localStorage.setItem('values', JSON.stringify(dataValues))
     createBook(values.name)
