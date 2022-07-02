@@ -54,15 +54,15 @@
                         <label for="selfload">Написать самому</label>
                     </div>
                     <p class="form__text">Название:</p>
-                    <div class="form__selfload  disable">
-                        <input type="text" class="form__name" placeholder="Заголовок">
-                        <textarea type="text" class="form__desc" placeholder="Описание" rows="3"></textarea>
+                    <div class="form__selfload  disable" name="form" action="/submit" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" placeholder="Заголовок">
+                        <textarea type="text" class="form__desc" name="file" placeholder="Описание" rows="3"></textarea>
                     </div>
-                    <div class="form__download">
-                        <input type="text" class="form__name" placeholder="Заголовок">
-                        <input type="file" class="form__file">
-                    </div>
-                    <button class="form__btn btn">Загрузить</button>
+                    <form class="form__download" id="form__download" name="form" action="/submit" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" placeholder="Заголовок">
+                        <input type="file" class="form__file" name="file" id="file">
+                    </form>
+                    <button type="submit" class="form__btn btn">Загрузить</button>
 
                 </div>
             </section>
@@ -71,7 +71,7 @@
             <!--Код вставляется когда нажата кнопка "читать книгу"-->
             <div class="view-area__read disable">
                 <h1 class="view-area__title title">TEXT1</h1>
-                <p class="view-area__text">fdjkighjhg</p>
+                <p class="view-area__text" >fdjkighjhg</p>
             </div>
             <!--Код вставляется когда нажата кнопка "редактировать книгу"-->
             <div class="view-area__change disable">
