@@ -35,7 +35,7 @@
                         <div class="book__btns">
                             <button class="book__btn btn change-btn">Ред.</button>
                             <button class="book__btn btn done-btn">Прочитана</button>
-                            <button class="book__btn btn read-btn">Читать</button>
+                            <button class="book__btn btn read-btn book__btn_readable">Читать</button>
                             <button class="book__btn btn del-btn">Х</button>
                         </div>
                     </div>
@@ -54,15 +54,17 @@
                         <label for="selfload">Написать самому</label>
                     </div>
                     <p class="form__text">Название:</p>
-                    <div class="form__selfload  disable" name="form" action="/submit" method="POST" enctype="multipart/form-data">
-                        <input type="text" class="form__name" name="login" placeholder="Заголовок">
-                        <textarea type="text" class="form__desc" name="file" placeholder="Описание" rows="3"></textarea>
-                    </div>
-                    <form class="form__download" id="form__download" name="form" action="/submit" method="POST" enctype="multipart/form-data">
-                        <input type="text" class="form__name" name="login" placeholder="Заголовок">
-                        <input type="file" class="form__file" name="file" id="file">
+                    <form class="form__selfload  disable" id="form__selfload" name="form__selfload" action="/" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" value="" placeholder="Заголовок">
+                        <input type="text" class="form__desc" name="file" value="" placeholder="Описание">
+                        <button type="submit" class="form__btn btn">Загрузить</button>
                     </form>
-                    <button type="submit" class="form__btn btn">Загрузить</button>
+                    <form class="form__download" id="form__download" name="form" action="/" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" value="" placeholder="Заголовок">
+                        <input type="file" class="form__file" name="file" value="" id="file">
+                        <button type="submit" class="form__btn btn">Загрузить</button>
+                    </form>
+                    
 
                 </div>
             </section>

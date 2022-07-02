@@ -136,6 +136,12 @@
     gap: 10px;
 }
 
+.form__download {
+    width: 96%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
 .form__text {
     font-style: 24px;

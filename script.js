@@ -39,9 +39,10 @@ const change = document.querySelector('.view-area__change')
 const book = document.querySelectorAll('.book')
 
 //Listener for read book btn
-function readButton(txt) {
+function readButton(title, text) {
     const readBtn = document.querySelectorAll('.read-btn');
     const viewTitle = document.querySelector('.view-area__title')
+    const viewText = document.querySelector('.view-area__text')
 
     readBtn.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -50,7 +51,9 @@ function readButton(txt) {
         })
     })
 
-    viewTitle.textContent = txt
+    viewTitle.textContent = title;
+    viewText.textContent = text;
+
 }
 
 //Listener for change book btn
@@ -65,6 +68,8 @@ function changeButton() {
     })
 }
 
+changeButton()
+
 //listener for done book btn
 function doneButton() {
     const doneBtn = document.querySelectorAll('.done-btn');
@@ -76,6 +81,7 @@ function doneButton() {
     })
 }
 
+doneButton()
 
 //listener for delete book btn
 function delButton() {
@@ -90,9 +96,11 @@ function delButton() {
     })
 }
 
+delButton()
 // data
 
 let dataLoad = []
+let arr = []
 
 // Upload files
 function upload(selector, options) {
@@ -113,13 +121,12 @@ function upload(selector, options) {
             const reader = new FileReader();
 
             reader.onload = e => {
-                //read.insertAdjacentHTML('afterend', `<p class="view-area__text">${e.target.result}</p>`)
                 
-                let nameBook = document.querySelectorAll('.form__name');
-                
-                let text = nameBook[1].value
+                let text = e.target.result
+                arr.push(text)
 
                 //отправка данных
+                /*
                 loadBtn.addEventListener('click', () => {
                     sendRequest('POST', requestURL, {
                         login: text,
@@ -130,8 +137,9 @@ function upload(selector, options) {
                 
                     console.log('click')
                 } )
+                */
             }
-            reader.readAsBinaryString(file)
+            reader.readAsText(file)
         })
     }
     input.addEventListener('change', changeHandler);
@@ -141,6 +149,7 @@ function upload(selector, options) {
 upload('#file', {
     accept: '.txt'
 })
+
 
 // FETCH
 
@@ -162,9 +171,8 @@ function sendRequest(method, url, body = null) {
 
 
 // create book
-/*
+
 function createBook(log) {
-   
     
             let bookOne = document.createElement('div')
             bookOne.classList.add('list__book')
@@ -176,10 +184,77 @@ function createBook(log) {
             <div class="book__btns">
                 <button class="book__btn btn change-btn">Ред.</button>
                 <button class="book__btn btn done-btn">Прочитана</button>
-                <button class="book__btn btn read-btn">Читать</button>
+                <button class="book__btn btn read-btn book__btn_readable">Читать</button>
                 <button class="book__btn btn del-btn">Х</button>
             </div>`
 
             listContainer.prepend(bookOne)    
+            changeButton()
+            doneButton()
+            delButton()
 }
-*/
+
+//upload data from form to book area
+
+const formDownload = document.getElementById('form__download');
+const formSelfload = document.getElementById('form__selfload');
+
+let dataValues = []
+
+
+function retriveFormValueDownload(event) {
+    event.preventDefault();
+
+    const name = formDownload.querySelector('[name="login"]')
+    const  file = formDownload.querySelector('[name="file"]')
+
+    const values = {
+        name: name.value,
+        file: file.value
+    }
+
+    createBook(values.name)
+    readButton(values.name, arr[0])
+}
+
+function retriveFormValueSelfload(event) {
+    event.preventDefault();
+
+    const name = formSelfload.querySelector('[name="login"]')
+    const file = formSelfload.querySelector('[name="file"]')
+
+    const values = {
+        name: name.value,
+        file: file.value
+    }
+
+    dataValues.push(values)
+    localStorage.setItem('values', JSON.stringify(dataValues))
+    createBook(values.name)
+    readButton(values.name, values.file)
+
+}
+
+
+formDownload.addEventListener('submit', retriveFormValueDownload)
+formSelfload.addEventListener('submit', retriveFormValueSelfload)
+console.log(dataValues)
+
+
+// LOCALSTORAGE
+
+dataValues = JSON.parse(localStorage.getItem('values'));
+
+dataValues.forEach((el) => {
+    createBook(el.name)
+}) 
+
+const b = document.querySelectorAll('.book__btn_readable')
+
+b.forEach((el, index) => {
+    el.addEventListener('click', () => {
+            
+        readButton(dataValues[index].name, dataValues[index].file)
+
+    })
+})
