@@ -54,7 +54,7 @@
                         <label for="selfload">Написать самому</label>
                     </div>
                     <p class="form__text">Название:</p>
-                    <div class="form__selfload disable">
+                    <div class="form__selfload  disable">
                         <input type="text" class="form__name" placeholder="Заголовок">
                         <textarea type="text" class="form__desc" placeholder="Описание" rows="3"></textarea>
                     </div>
@@ -69,12 +69,16 @@
         </article>
         <aside class="view-area">
             <!--Код вставляется когда нажата кнопка "читать книгу"-->
-            <h1 class="view-area__title title">TEXT1</h1>
-            <p class="view-area__text">fdjkighjhg</p>
+            <div class="view-area__read disable">
+                <h1 class="view-area__title title">TEXT1</h1>
+                <p class="view-area__text">fdjkighjhg</p>
+            </div>
             <!--Код вставляется когда нажата кнопка "редактировать книгу"-->
-            <input type="text" class="view-area__change-headline">
-            <textarea type="text" class="view-area__change-text" rows="8"></textarea>
-            <button class="viev-area__btn btn">Сохранить</button>
+            <div class="view-area__change disable">
+                <input type="text" class="view-area__change-headline">
+                <textarea type="text" class="view-area__change-text" rows="8"></textarea>
+                <button class="viev-area__btn btn">Сохранить</button>
+            </div>
         </aside>
     </main>
     <script src="./script.js"></script>
