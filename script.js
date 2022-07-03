@@ -39,19 +39,6 @@ const change = document.querySelector('.view-area__change')
 const book = document.querySelectorAll('.book')
 
 
-
-//Listener for change book btn
-function changeButton() {
-    const changeBtn = document.querySelectorAll('.change-btn');
-
-    changeBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            new radioChange(change).remove();
-            new radioChange(read).add();
-        })
-    })
-}
-
 changeButton()
 
 //listener for done book btn
@@ -161,6 +148,8 @@ function createBook(log) {
             listContainer.prepend(bookOne)   
             delButton()
             doneButton() 
+            changeButton()
+            readButton()
 }
 
 //upload data from form to book area
@@ -195,7 +184,7 @@ class retriveFormValue {
         localStorage.setItem('values', JSON.stringify(dataValues))
 
         createBook(values.name)
-        readButton()
+        
     }
 
     getFormValuesDown() {
@@ -218,7 +207,7 @@ class retriveFormValue {
         localStorage.setItem('values', JSON.stringify(dataValues))
 
         createBook(values.name)
-        readButton()
+        
     }
 }
 /*
@@ -276,14 +265,19 @@ formSelfload.addEventListener('submit', (event) => {
 
 // LOCALSTORAGE
 
-dataValues = JSON.parse(localStorage.getItem('values'));
+function localStorageRun() {
+    dataValues = JSON.parse(localStorage.getItem('values'));
 
-dataValues.forEach((el) => {
-    if(el.name != null) {
-        createBook(el.name)
-    }
+    dataValues.forEach((el) => {
+        if(el.name != null) {
+            createBook(el.name)
+        }
     
-}) 
+    }) 
+}
+
+localStorageRun()
+
 
 
 //Listener for read book btn
@@ -317,13 +311,11 @@ function readButton() {
             } else {
                 viewText.textContent = dataValues[index].file;
             }
-
-            
         })        
     })
 }
 
-readButton()
+
 
 
 //listener for delete book btn
@@ -345,7 +337,6 @@ function delButton() {
                 }
             })
 
-            console.log(index)
             dataValues[index].name = null;
             dataValues[index].file = null;
 
@@ -355,3 +346,46 @@ function delButton() {
 
     //console.log(dataValues)
 }
+
+//Listener for change book btn
+function changeButton() {
+    const changeBtn = document.querySelectorAll('.change-btn');
+    const changeTitle = document.querySelector('.view-area__change-headline');
+    const changeText = document.querySelector('.view-area__change-text');
+
+    const saveChangeBtn = document.querySelector('.viev-area__btn')
+
+    changeBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            new radioChange(change).remove();
+            new radioChange(read).add();
+
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+            let book = event.target.parentNode.parentNode.parentNode;
+            let index;
+
+            dataValues.forEach((el, i) => {
+                if(el.name == nameBook) {
+                    index = i;
+                }
+            })
+
+            changeTitle.value = nameBook
+            changeText.textContent = dataValues[index].file
+
+            saveChangeBtn.addEventListener('click', () => {
+               dataValues[index].name = changeTitle.value;
+               dataValues[index].file = changeText.textContent;
+
+               localStorage.setItem('values', JSON.stringify(dataValues))
+               book.innerHTML = `<p class="list__drop-area drop-area">Drop down area</p>`
+
+               localStorageRun()
+               
+            })
+            
+        })
+    })
+}
+
