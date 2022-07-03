@@ -61,19 +61,7 @@ function doneButton() {
     doneBtn.forEach(btn => {
         btn.addEventListener('click', () => {
             btn.textContent = 'Прочитал';
-        })
-    })
-}
-
-//listener for delete book btn
-function delButton() {
-    const delBtn = document.querySelectorAll('.del-btn');
-
-    delBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.parentNode.parentNode.classList.add('disable');
-            new radioChange(read).add();
-            new radioChange(change).add();
+            btn.parentNode.parentNode.style.backgroundColor = '#00f'
         })
     })
 }
@@ -107,9 +95,6 @@ function upload(selector, options) {
                 
                 let text = e.target.result
                 arr.push(text)
-                //console.log(text)
-
-                //localStorage.setItem('items', JSON.stringify(Object.assign(arr)))
 
                 //отправка данных
                 /*
@@ -294,11 +279,11 @@ formSelfload.addEventListener('submit', (event) => {
 dataValues = JSON.parse(localStorage.getItem('values'));
 
 dataValues.forEach((el) => {
-    createBook(el.name)
+    if(el.name != null) {
+        createBook(el.name)
+    }
+    
 }) 
-
-//arrValues = JSON.parse(localStorage.getItem('items'));
-//console.log(arrValues)
 
 
 //Listener for read book btn
@@ -339,3 +324,34 @@ function readButton() {
 }
 
 readButton()
+
+
+//listener for delete book btn
+function delButton() {
+    const delBtn = document.querySelectorAll('.del-btn');
+
+    delBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.parentNode.parentNode.classList.add('disable');
+            new radioChange(read).add();
+            new radioChange(change).add();
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+            let index;
+
+            dataValues.forEach((el, i) => {
+                if(el.name == nameBook) {
+                    index = i;
+                }
+            })
+
+            console.log(index)
+            dataValues[index].name = null;
+            dataValues[index].file = null;
+
+            localStorage.setItem('values', JSON.stringify(dataValues))
+        })
+    })
+
+    //console.log(dataValues)
+}
