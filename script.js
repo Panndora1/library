@@ -38,23 +38,7 @@ const change = document.querySelector('.view-area__change')
 //Create const for book
 const book = document.querySelectorAll('.book')
 
-//Listener for read book btn
-function readButton(title, text) {
-    const readBtn = document.querySelectorAll('.read-btn');
-    const viewTitle = document.querySelector('.view-area__title')
-    const viewText = document.querySelector('.view-area__text')
 
-    readBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            new radioChange(read).remove();
-            new radioChange(change).add();
-        })
-    })
-
-    viewTitle.textContent = title;
-    viewText.textContent = text;
-
-}
 
 //Listener for change book btn
 function changeButton() {
@@ -81,8 +65,6 @@ function doneButton() {
     })
 }
 
-doneButton()
-
 //listener for delete book btn
 function delButton() {
     const delBtn = document.querySelectorAll('.del-btn');
@@ -96,11 +78,11 @@ function delButton() {
     })
 }
 
-delButton()
 // data
 
 let dataLoad = []
 let arr = []
+let arrValues;
 
 // Upload files
 function upload(selector, options) {
@@ -122,8 +104,12 @@ function upload(selector, options) {
 
             reader.onload = e => {
                 
+                
                 let text = e.target.result
                 arr.push(text)
+                //console.log(text)
+
+                //localStorage.setItem('items', JSON.stringify(Object.assign(arr)))
 
                 //отправка данных
                 /*
@@ -173,8 +159,7 @@ function sendRequest(method, url, body = null) {
 // create book
 
 function createBook(log) {
-    
-            let bookOne = document.createElement('div')
+    let bookOne = document.createElement('div')
             bookOne.classList.add('list__book')
             bookOne.classList.add('book')
             const listContainer = document.querySelector('.list__container')
@@ -188,10 +173,9 @@ function createBook(log) {
                 <button class="book__btn btn del-btn">Х</button>
             </div>`
 
-            listContainer.prepend(bookOne)    
-            changeButton()
-            doneButton()
+            listContainer.prepend(bookOne)   
             delButton()
+            doneButton() 
 }
 
 //upload data from form to book area
@@ -201,7 +185,58 @@ const formSelfload = document.getElementById('form__selfload');
 
 let dataValues = []
 
+class retriveFormValue {
+    constructor(form) {
+        this.form = form
+    }
 
+    getFormValuesSelf() {        
+        const name = this.form.querySelector('[name="login"]')
+        const  file = this.form.querySelector('[name="file"]')
+
+        let values = {}
+
+        values = {
+            name: name.value,
+            file: file.value
+        }
+
+
+        if (dataValues == null) {
+            dataValues = []
+        }
+    
+        dataValues.push(values)
+        localStorage.setItem('values', JSON.stringify(dataValues))
+
+        createBook(values.name)
+        readButton()
+    }
+
+    getFormValuesDown() {
+        const name = this.form.querySelector('[name="login"]')
+
+        let values = {}
+
+        values = {
+            name: name.value,
+            file: arr[0]
+        }
+
+        arr = []
+
+        if (dataValues == null) {
+            dataValues = []
+        }
+    
+        dataValues.push(values)
+        localStorage.setItem('values', JSON.stringify(dataValues))
+
+        createBook(values.name)
+        readButton()
+    }
+}
+/*
 function retriveFormValueDownload(event) {
     event.preventDefault();
 
@@ -233,7 +268,6 @@ function retriveFormValueSelfload(event) {
     if (dataValues == null) {
         dataValues = []
     }
-    
 
     dataValues.push(values)
     localStorage.setItem('values', JSON.stringify(dataValues))
@@ -241,11 +275,18 @@ function retriveFormValueSelfload(event) {
     readButton(values.name, values.file)
 
 }
+*/
 
+formDownload.addEventListener('submit', (event) => {
+    event.preventDefault()
+    new retriveFormValue(formDownload).getFormValuesDown();
+})
 
-formDownload.addEventListener('submit', retriveFormValueDownload)
-formSelfload.addEventListener('submit', retriveFormValueSelfload)
-console.log(dataValues)
+formSelfload.addEventListener('submit', (event) => {
+    event.preventDefault()
+    new retriveFormValue(formSelfload).getFormValuesSelf();
+})
+
 
 
 // LOCALSTORAGE
@@ -256,12 +297,45 @@ dataValues.forEach((el) => {
     createBook(el.name)
 }) 
 
-const b = document.querySelectorAll('.book__btn_readable')
+//arrValues = JSON.parse(localStorage.getItem('items'));
+//console.log(arrValues)
 
-b.forEach((el, index) => {
-    el.addEventListener('click', () => {
+
+//Listener for read book btn
+function readButton() {
+    const readBtn = document.querySelectorAll('.book__btn_readable');
+    const viewTitle = document.querySelector('.view-area__title')
+    const viewText = document.querySelector('.view-area__text')
+
+    readBtn.forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+            new radioChange(read).remove();
+            new radioChange(change).add();
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+
+            viewTitle.textContent = nameBook;
+
+            let index;
+
+            dataValues.forEach((el, i) => {
+                if(el.name == nameBook) {
+                    index = i;
+                }
+            })
+
+            let fileName = dataValues[index].file;
             
-        readButton(dataValues[index].name, dataValues[index].file)
+            if(fileName.includes('.txt')) {
+                console.log(arr)
+                viewText.textContent = arr[index];
+            } else {
+                viewText.textContent = dataValues[index].file;
+            }
 
+            
+        })        
     })
-})
+}
+
+readButton()
