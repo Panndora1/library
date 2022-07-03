@@ -82,20 +82,6 @@ function upload(selector, options) {
                 
                 let text = e.target.result
                 arr.push(text)
-
-                //отправка данных
-                /*
-                loadBtn.addEventListener('click', () => {
-                    sendRequest('POST', requestURL, {
-                        login: text,
-                        file: e.target.result
-                    })
-                        .then(data => console.log(data))
-                        .catch(err => console.log(err));
-                
-                    console.log('click')
-                } )
-                */
             }
             reader.readAsText(file)
         })
