@@ -124,6 +124,8 @@ function sendRequest(method, url, body = null) {
         headers: headers
     }).then(response => {
         return response.json()
+    }).then((data) => {
+        console.log(data)
     })
 }
 
@@ -174,6 +176,8 @@ class retriveFormValue {
             name: name.value,
             file: file.value
         }
+
+        
 
 
         if (dataValues == null) {
@@ -254,6 +258,17 @@ function retriveFormValueSelfload(event) {
 formDownload.addEventListener('submit', (event) => {
     event.preventDefault()
     new retriveFormValue(formDownload).getFormValuesDown();
+
+    const name = formDownload.querySelector('[name="login"]')
+    const fileField = formDownload.querySelector('[name="file"]')
+   
+    const formData = new FormData();
+   
+    formData.append('login', name.value);
+    formData.append('file', fileField.files[0]);
+   
+    sendRequest("POST", requestURL, formData)
+    
 })
 
 formSelfload.addEventListener('submit', (event) => {
