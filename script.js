@@ -3,7 +3,8 @@ const downloadRadio = document.querySelector('.download');
 const selfloadRadio = document.querySelector('.selfload');
 const downloadForm = document.querySelector('.form__download');
 const selfloadForm = document.querySelector('.form__selfload');
-const loadBtn = document.querySelector('.form__btn')
+const loadBtn = document.querySelector('.form__btn');
+let draggedItem = null;
 
 // Class to control the visibility of objects
 class radioChange {
@@ -60,6 +61,7 @@ let arr = []
 let arrValues;
 
 // Upload files
+
 function upload(selector, options) {
     const input = document.querySelector(selector);
 
@@ -71,21 +73,8 @@ function upload(selector, options) {
         if (!event.target.files.length) {
             return
         }
-
-        const files = Array.from(event.target.files);
-        
-        files.forEach(file => {
-            const reader = new FileReader();
-
-            reader.onload = e => {
-                
-                
-                let text = e.target.result
-                arr.push(text)
-            }
-            reader.readAsText(file)
-        })
     }
+
     input.addEventListener('change', changeHandler);
 }
 
@@ -95,23 +84,116 @@ upload('#file', {
 })
 
 
-// FETCH
+//API url
 
 const requestURL = 'https://apiinterns.osora.ru/';
 
-function sendRequest(method, url, body = null) {
-    const headers = {
+
+//upload data from form to book area
+
+const formDownload = document.getElementById('form__download');
+const formSelfload = document.getElementById('form__selfload');
+
+let dataValues = [];
+
+class retriveFormValue {
+    constructor(form) {
+        this.form = form
+    }
+
+    getData(name, file) {
+
+        let values = {}
+
+        values = {
+            name: name.value,
+            file: file.value || file.text
+        }
+
+        if (dataValues == null) {
+            dataValues = []
+        }
+    
+        dataValues.push(values)
+        localStorage.setItem('values', JSON.stringify(dataValues));
+
+        createBook(values.name)
+    }
+/*
+    getFormValuesSelf() {        
+        const name = this.form.querySelector('[name="login"]')
+        const file = this.form.querySelector('[name="file"]')
+
+        let values = {}
+
+        values = {
+            name: name.value,
+            file: file.value
+        }
+
+
+        if (dataValues == null) {
+            dataValues = []
+        }
+    
+        dataValues.push(values)
+        localStorage.setItem('values', JSON.stringify(dataValues))
+
+        createBook(values.name)
+
+        dradAndDrop()
         
     }
+
+    */
+
+    postRequest(name, fileField) {
+   
+        const formData = new FormData();
+   
+        formData.append('login', name.value);
+        formData.append('file', fileField.files[0]);
+   
+        sendRequest("POST", requestURL, formData)
+    }
+/*
+    getFormValuesDown(data) {
+        const name = formDownload.querySelector('[name="login"]')
+
+        let values = {}
+
+        values = {
+            name: name.value,
+            file: data.text
+        }
+
+        if (dataValues == null) {
+            dataValues = []
+        }
+    
+        dataValues.push(values)
+        localStorage.setItem('values', JSON.stringify(dataValues))
+
+        createBook(values.name)
+
+        dradAndDrop()
+    }
+*/
+    
+}
+
+// FETCH function
+
+function sendRequest(method, url, body = null) {
     
     return fetch(url, {
         method: method,
-        body: body,
-        headers: headers
+        body: body
     }).then(response => {
         return response.json()
     }).then((data) => {
-        console.log(data)
+        const name = formDownload.querySelector('[name="login"]')
+        new retriveFormValue(formDownload).getData(name, data);
     })
 }
 
@@ -139,128 +221,26 @@ function createBook(log) {
             doneButton() 
             changeButton()
             readButton()
+            dragNDrop()
 }
 
-//upload data from form to book area
-
-const formDownload = document.getElementById('form__download');
-const formSelfload = document.getElementById('form__selfload');
-
-let dataValues = []
-
-class retriveFormValue {
-    constructor(form) {
-        this.form = form
-    }
-
-    getFormValuesSelf() {        
-        const name = this.form.querySelector('[name="login"]')
-        const  file = this.form.querySelector('[name="file"]')
-
-        let values = {}
-
-        values = {
-            name: name.value,
-            file: file.value
-        }
-
-        
-
-
-        if (dataValues == null) {
-            dataValues = []
-        }
-    
-        dataValues.push(values)
-        localStorage.setItem('values', JSON.stringify(dataValues))
-
-        createBook(values.name)
-        
-    }
-
-    getFormValuesDown() {
-        const name = this.form.querySelector('[name="login"]')
-
-        let values = {}
-
-        values = {
-            name: name.value,
-            file: arr[0]
-        }
-
-        arr = []
-
-        if (dataValues == null) {
-            dataValues = []
-        }
-    
-        dataValues.push(values)
-        localStorage.setItem('values', JSON.stringify(dataValues))
-
-        createBook(values.name)
-        
-    }
-}
-/*
-function retriveFormValueDownload(event) {
-    event.preventDefault();
-
-    const name = formDownload.querySelector('[name="login"]')
-    const  file = formDownload.querySelector('[name="file"]')
-
-    const values = {
-        name: name.value,
-        file: file.value
-    }
-
-    createBook(values.name)
-    readButton(values.name, arr[0])
-}
-
-function retriveFormValueSelfload(event) {
-    event.preventDefault();
-
-    const name = formSelfload.querySelector('[name="login"]')
-    const file = formSelfload.querySelector('[name="file"]')
-
-    const values = {
-        name: name.value,
-        file: file.value
-    }
-
-    sendRequest("POST", requestURL, values)
-
-    if (dataValues == null) {
-        dataValues = []
-    }
-
-    dataValues.push(values)
-    localStorage.setItem('values', JSON.stringify(dataValues))
-    createBook(values.name)
-    readButton(values.name, values.file)
-
-}
-*/
 
 formDownload.addEventListener('submit', (event) => {
     event.preventDefault()
-    new retriveFormValue(formDownload).getFormValuesDown();
 
     const name = formDownload.querySelector('[name="login"]')
     const fileField = formDownload.querySelector('[name="file"]')
-   
-    const formData = new FormData();
-   
-    formData.append('login', name.value);
-    formData.append('file', fileField.files[0]);
-   
-    sendRequest("POST", requestURL, formData)
-    
+
+    new retriveFormValue(formDownload).postRequest(name, fileField);
 })
 
 formSelfload.addEventListener('submit', (event) => {
     event.preventDefault()
-    new retriveFormValue(formSelfload).getFormValuesSelf();
+
+    const name = formSelfload.querySelector('[name="login"]')
+    const file = formSelfload.querySelector('[name="file"]')
+
+    new retriveFormValue(formSelfload).getData(name, file);
 })
 
 
@@ -279,6 +259,7 @@ function localStorageRun() {
 }
 
 localStorageRun()
+
 
 //Listener for read book btn
 function readButton() {
@@ -386,59 +367,43 @@ function changeButton() {
     })
 }
 
-// drag and drop
-
-let targetBook;
-
-function dradAndDrop() {
+function dragNDrop() {
+    const container = document.querySelectorAll('.drop-area');
     const books = document.querySelectorAll('.book');
-    const dropArea = document.querySelectorAll('.drop-area');
 
-    function dragStart() {
-        setTimeout(() => {
-            this.classList.add('hide');
-        }, 0)
+    for (let i = 0; i < books.length; i++) {
+        const book = books[i];
+
+        book.addEventListener('dragstart', () => {
+            draggedItem = book;
+            setTimeout(() => {
+                book.classList.add('hide')
+            }, 0)
+        })
+
+        book.addEventListener('dragend', () => {
+            setTimeout(() => {
+                book.classList.remove('hide');
+                draggedItem = null;
+            }, 0)
+        })
+
+        for (let j = 0; j < container.length; j++) {
+            const area = container[j];
+
+            area.addEventListener('dragover', e => e.preventDefault())
+            area.addEventListener('dragenter', function() {
+                this.classList.add('hovered')
+            })
+            area.addEventListener('dragleave', function() {
+                this.classList.remove('hovered')
+            })
+            area.addEventListener('drop', function() {
+                this.classList.remove('hovered')
+                this.before(draggedItem);
+            })
+        }
     }
-
-    function dragEnd() {
-        this.classList.remove('hide');
-    }
-
-    function dragOver(event) {
-        event.preventDefault()
-    }
-
-    function dragEnter() {
-        this.classList.add('hovered');
-    }
-
-    function dragLeave() {
-        this.classList.remove('hovered');
-    }
-
-    function dragDrop() {
-        this.before(targetBook)
-    }
-
-    dropArea.forEach(area => {
-        area.addEventListener('dragover', dragOver);
-        area.addEventListener('dragenter', dragEnter);
-        area.addEventListener('dragleave', dragLeave);
-        area.addEventListener('drop', dragDrop);
-    })
-
-
-    books.forEach(book => {
-        book.addEventListener('dragstart', (event) => {
-            dragStart();
-
-            targetBook = event.target;
-        } );
-        book.addEventListener('dragend', dragEnd);
-
-
-    })
-
 }
 
-dradAndDrop()
+dragNDrop()
