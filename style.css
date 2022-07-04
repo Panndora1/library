@@ -197,3 +197,11 @@
     width: 92%;
     padding: 8px 0;
 }
+
+.hide {
+    display: none;
+}
+
+.hovered {
+    background-color: rgb(129, 42, 42);
+}

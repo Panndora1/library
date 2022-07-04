@@ -122,6 +122,7 @@ function createBook(log) {
     let bookOne = document.createElement('div')
             bookOne.classList.add('list__book')
             bookOne.classList.add('book')
+            bookOne.draggable = 'true'
             const listContainer = document.querySelector('.list__container')
 
             bookOne.innerHTML = `
@@ -279,8 +280,6 @@ function localStorageRun() {
 
 localStorageRun()
 
-
-
 //Listener for read book btn
 function readButton() {
     const readBtn = document.querySelectorAll('.book__btn_readable');
@@ -317,8 +316,6 @@ function readButton() {
 }
 
 
-
-
 //listener for delete book btn
 function delButton() {
     const delBtn = document.querySelectorAll('.del-btn');
@@ -345,7 +342,6 @@ function delButton() {
         })
     })
 
-    //console.log(dataValues)
 }
 
 //Listener for change book btn
@@ -390,3 +386,59 @@ function changeButton() {
     })
 }
 
+// drag and drop
+
+let targetBook;
+
+function dradAndDrop() {
+    const books = document.querySelectorAll('.book');
+    const dropArea = document.querySelectorAll('.drop-area');
+
+    function dragStart() {
+        setTimeout(() => {
+            this.classList.add('hide');
+        }, 0)
+    }
+
+    function dragEnd() {
+        this.classList.remove('hide');
+    }
+
+    function dragOver(event) {
+        event.preventDefault()
+    }
+
+    function dragEnter() {
+        this.classList.add('hovered');
+    }
+
+    function dragLeave() {
+        this.classList.remove('hovered');
+    }
+
+    function dragDrop() {
+        this.before(targetBook)
+    }
+
+    dropArea.forEach(area => {
+        area.addEventListener('dragover', dragOver);
+        area.addEventListener('dragenter', dragEnter);
+        area.addEventListener('dragleave', dragLeave);
+        area.addEventListener('drop', dragDrop);
+    })
+
+
+    books.forEach(book => {
+        book.addEventListener('dragstart', (event) => {
+            dragStart();
+
+            targetBook = event.target;
+        } );
+        book.addEventListener('dragend', dragEnd);
+
+
+    })
+
+}
+
+dradAndDrop()
