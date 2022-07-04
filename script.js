@@ -95,6 +95,7 @@ const formDownload = document.getElementById('form__download');
 const formSelfload = document.getElementById('form__selfload');
 
 let dataValues = [];
+let booksArea;
 
 class retriveFormValue {
     constructor(form) {
@@ -118,6 +119,7 @@ class retriveFormValue {
         localStorage.setItem('values', JSON.stringify(dataValues));
 
         createBook(values.name)
+
     }
 /*
     getFormValuesSelf() {        
@@ -224,6 +226,30 @@ function createBook(log) {
             dragNDrop()
 }
 
+function createBookFavorite(log) {
+    let bookOne = document.createElement('div')
+            bookOne.classList.add('favorite__book')
+            bookOne.classList.add('book')
+            bookOne.draggable = 'true'
+            const listContainer = document.querySelector('.favorite__container')
+
+            bookOne.innerHTML = `
+            <h3 class="book__title">${log}</h3>
+            <div class="book__btns">
+                <button class="book__btn btn change-btn">Ред.</button>
+                <button class="book__btn btn done-btn">Прочитана</button>
+                <button class="book__btn btn read-btn book__btn_readable">Читать</button>
+                <button class="book__btn btn del-btn">Х</button>
+            </div>`
+
+            listContainer.prepend(bookOne)   
+            delButton()
+            doneButton() 
+            changeButton()
+            readButton()
+            dragNDrop()
+}
+
 
 formDownload.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -254,11 +280,23 @@ function localStorageRun() {
         if(el.name != null) {
             createBook(el.name)
         }
-    
-    }) 
+    })     
+
 }
 
 localStorageRun()
+
+function localStorageFavorite() {
+    let favCollection = JSON.parse(localStorage.getItem('favorite'));
+
+    favCollection.forEach(el => {
+        if(el != null) {
+            createBookFavorite(el)
+        }
+    })
+}
+
+localStorageFavorite()
 
 
 //Listener for read book btn
@@ -367,6 +405,8 @@ function changeButton() {
     })
 }
 
+let favData = [];
+
 function dragNDrop() {
     const container = document.querySelectorAll('.drop-area');
     const books = document.querySelectorAll('.book');
@@ -400,10 +440,28 @@ function dragNDrop() {
             })
             area.addEventListener('drop', function() {
                 this.classList.remove('hovered')
+                if(this.parentNode.className == 'favorite__container container') {
+                    let item = draggedItem.childNodes[1].textContent
+                    favData.push(item)
+
+                    let clearFavData = Array.from(new Set(favData))
+
+                   console.log(clearFavData)
+                   localStorage.setItem('favorite', JSON.stringify(clearFavData))
+
+                } 
+
+
                 this.before(draggedItem);
             })
         }
-    }
+    }    
+
+    
+
 }
 
 dragNDrop()
+
+
+
