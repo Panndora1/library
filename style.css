@@ -182,6 +182,8 @@
 .view-area__text {
     font-style: 24px;
     font-weight: normal;
+    height: 80vh;
+    overflow-y: scroll;
 }
 
 .view-area__change-headline,

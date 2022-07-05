@@ -108,7 +108,6 @@ class retriveFormValue {
 
     }
 
-
     postRequest(name, fileField) {
    
         const formData = new FormData();
@@ -119,7 +118,6 @@ class retriveFormValue {
         sendRequest("POST", requestURL, formData)
     }
 
-    
 }
 
 // FETCH function
