@@ -6,30 +6,15 @@ const selfloadForm = document.querySelector('.form__selfload');
 const loadBtn = document.querySelector('.form__btn');
 let draggedItem = null;
 
-// Class to control the visibility of objects
-class radioChange {
-    constructor(btn) {
-        this.btn = btn
-    }
-
-    add() {
-        this.btn.classList.add('disable');
-    }
-
-    remove() {
-        this.btn.classList.remove('disable');
-    }
-}
-
 //Listener for radio button
 downloadRadio.addEventListener('click', () => {
-    new radioChange(downloadForm).remove();
-    new radioChange(selfloadForm).add();
+    selfloadForm.classList.add('disable');
+    downloadForm.classList.remove('disable');
 })
 
 selfloadRadio.addEventListener('click', () => {
-    new radioChange(selfloadForm).remove();
-    new radioChange(downloadForm).add();
+    selfloadForm.classList.remove('disable');
+    downloadForm.classList.add('disable');
 })
 
 //Create const for book review
@@ -95,6 +80,7 @@ const formDownload = document.getElementById('form__download');
 const formSelfload = document.getElementById('form__selfload');
 
 let dataValues = [];
+let containers = {}
 let booksArea;
 
 class retriveFormValue {
@@ -121,33 +107,7 @@ class retriveFormValue {
         createBook(values.name)
 
     }
-/*
-    getFormValuesSelf() {        
-        const name = this.form.querySelector('[name="login"]')
-        const file = this.form.querySelector('[name="file"]')
 
-        let values = {}
-
-        values = {
-            name: name.value,
-            file: file.value
-        }
-
-
-        if (dataValues == null) {
-            dataValues = []
-        }
-    
-        dataValues.push(values)
-        localStorage.setItem('values', JSON.stringify(dataValues))
-
-        createBook(values.name)
-
-        dradAndDrop()
-        
-    }
-
-    */
 
     postRequest(name, fileField) {
    
@@ -158,29 +118,7 @@ class retriveFormValue {
    
         sendRequest("POST", requestURL, formData)
     }
-/*
-    getFormValuesDown(data) {
-        const name = formDownload.querySelector('[name="login"]')
 
-        let values = {}
-
-        values = {
-            name: name.value,
-            file: data.text
-        }
-
-        if (dataValues == null) {
-            dataValues = []
-        }
-    
-        dataValues.push(values)
-        localStorage.setItem('values', JSON.stringify(dataValues))
-
-        createBook(values.name)
-
-        dradAndDrop()
-    }
-*/
     
 }
 
@@ -209,45 +147,37 @@ function createBook(log) {
             bookOne.draggable = 'true'
             const listContainer = document.querySelector('.list__container')
 
-            bookOne.innerHTML = `
-            <h3 class="book__title">${log}</h3>
-            <div class="book__btns">
-                <button class="book__btn btn change-btn">Ред.</button>
-                <button class="book__btn btn done-btn">Прочитана</button>
-                <button class="book__btn btn read-btn book__btn_readable">Читать</button>
-                <button class="book__btn btn del-btn">Х</button>
-            </div>`
+            let header = document.createElement('h3');
+            header.className = 'book__title'
+            header.textContent = log;
+            bookOne.prepend(header);
 
+            let div = document.createElement('div');
+            div.className = 'book__btns'
+            bookOne.append(div)
+
+            let classBtns = ["book__btn btn change-btn", "book__btn btn done-btn", "book__btn btn read-btn book__btn_readable", "book__btn btn del-btn"]
+            let textBtns = ['Ред.', 'Прочитана', 'Читать', 'Х']
+
+            for (let i = 0;  i < 4; i++) {
+                let btn = document.createElement('button');
+                btn.className = classBtns[i];
+                btn.textContent = textBtns[i];
+
+                div.append(btn)
+            }
+            
             listContainer.prepend(bookOne)   
             delButton()
             doneButton() 
             changeButton()
             readButton()
-            dragNDrop()
-}
+            dragNDrop()        
 
-function createBookFavorite(log) {
-    let bookOne = document.createElement('div')
-            bookOne.classList.add('favorite__book')
-            bookOne.classList.add('book')
-            bookOne.draggable = 'true'
-            const listContainer = document.querySelector('.favorite__container')
-
-            bookOne.innerHTML = `
-            <h3 class="book__title">${log}</h3>
-            <div class="book__btns">
-                <button class="book__btn btn change-btn">Ред.</button>
-                <button class="book__btn btn done-btn">Прочитана</button>
-                <button class="book__btn btn read-btn book__btn_readable">Читать</button>
-                <button class="book__btn btn del-btn">Х</button>
-            </div>`
-
-            listContainer.prepend(bookOne)   
-            delButton()
-            doneButton() 
-            changeButton()
-            readButton()
-            dragNDrop()
+            if(containers.fav != undefined) {
+                startLocalDragNdrop()
+            }
+            
 }
 
 
@@ -280,24 +210,55 @@ function localStorageRun() {
         if(el.name != null) {
             createBook(el.name)
         }
-    })     
-
+    
+    }) 
+    
 }
 
 localStorageRun()
 
-function localStorageFavorite() {
-    let favCollection = JSON.parse(localStorage.getItem('favorite'));
-
-    favCollection.forEach(el => {
-        if(el != null) {
-            createBookFavorite(el)
-        }
-    })
+if (localStorage.containers != undefined) {
+    localStorageDragNDrop()
 }
 
-localStorageFavorite()
+function localStorageDragNDrop() {
+    let containersValue = JSON.parse(localStorage.getItem('containers'));
 
+
+        let favWr = document.querySelector('.books__fav');
+        let mainWr = document.querySelector('.books__list');
+
+
+        console.log(favWr, mainWr)
+
+        favWr.innerHTML = ''
+        mainWr.innerHTML = ''
+
+        mainWr.innerHTML = containersValue.main;
+        favWr.innerHTML = containersValue.fav;
+
+        let books = document.querySelectorAll('.book');
+        books.forEach(el => {
+            el.classList.remove('hide')
+        })
+
+
+        createHeaders('Любимые книги', 'favorite__title title', favWr);
+        createHeaders('Список книг','list__title title', mainWr);
+
+        delButton()
+            doneButton() 
+            changeButton()
+            readButton()
+}
+
+function createHeaders(text, className, parent) {
+    let header = document.createElement('h2');
+    header.className = className;
+    header.textContent = text;
+
+    parent.prepend(header)
+}
 
 //Listener for read book btn
 function readButton() {
@@ -307,10 +268,11 @@ function readButton() {
 
     readBtn.forEach((btn) => {
         btn.addEventListener('click', (event) => {
-            new radioChange(read).remove();
-            new radioChange(change).add();
 
-            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+            change.classList.add('disable');
+            read.classList.remove('disable');
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
 
             viewTitle.textContent = nameBook;
 
@@ -342,10 +304,12 @@ function delButton() {
     delBtn.forEach(btn => {
         btn.addEventListener('click', () => {
             btn.parentNode.parentNode.classList.add('disable');
-            new radioChange(read).add();
-            new radioChange(change).add();
+            change.classList.add('disable');
+            read.classList.add('disable');
 
-            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
+
+            console.log(event.target.parentNode)
             let index;
 
             dataValues.forEach((el, i) => {
@@ -358,6 +322,8 @@ function delButton() {
             dataValues[index].file = null;
 
             localStorage.setItem('values', JSON.stringify(dataValues))
+            startLocalDragNdrop()
+
         })
     })
 
@@ -371,13 +337,13 @@ function changeButton() {
 
     const saveChangeBtn = document.querySelector('.viev-area__btn')
 
+    
     changeBtn.forEach(btn => {
         btn.addEventListener('click', () => {
-            new radioChange(change).remove();
-            new radioChange(read).add();
+            change.classList.remove('disable');
+            read.classList.add('disable');
 
-
-            let nameBook = event.target.parentNode.parentNode.childNodes[1].textContent;
+            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
             let book = event.target.parentNode.parentNode.parentNode;
             let index;
 
@@ -402,10 +368,8 @@ function changeButton() {
             })
             
         })
-    })
+    } ) 
 }
-
-let favData = [];
 
 function dragNDrop() {
     const container = document.querySelectorAll('.drop-area');
@@ -440,28 +404,27 @@ function dragNDrop() {
             })
             area.addEventListener('drop', function() {
                 this.classList.remove('hovered')
-                if(this.parentNode.className == 'favorite__container container') {
-                    let item = draggedItem.childNodes[1].textContent
-                    favData.push(item)
-
-                    let clearFavData = Array.from(new Set(favData))
-
-                   console.log(clearFavData)
-                   localStorage.setItem('favorite', JSON.stringify(clearFavData))
-
-                } 
-
-
                 this.before(draggedItem);
+
+                startLocalDragNdrop()
+                
             })
+            
         }
     }    
-
     
-
 }
 
 dragNDrop()
 
-
-
+function startLocalDragNdrop() {
+    let favorite = document.querySelector('.favorite__container'),
+        main = document.querySelector('.list__container');     
+        
+    containers = {
+        fav: favorite.outerHTML,
+        main: main.outerHTML
+    }
+    
+    localStorage.setItem('containers', JSON.stringify(containers))
+}
