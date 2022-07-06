@@ -168,6 +168,11 @@
     padding: 5px;
 }
 
+.view-area__read {
+    width: 100%;
+    max-width: 600px;
+}
+
 .view-area {
     width: 50%;
     height: 85vh;
@@ -179,7 +184,13 @@
     padding: 10px;
 }
 
+.view-area__title {
+    text-align: center;
+}
+
 .view-area__text {
+    width: 100%;
+    max-width: 600px;
     font-style: 24px;
     font-weight: normal;
     height: 80vh;
@@ -195,7 +206,7 @@
     border: 2px solid #000;
 }
 
-.viev-area__btn {
+.view-area__btn {
     width: 92%;
     padding: 8px 0;
 }

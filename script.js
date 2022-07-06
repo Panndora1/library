@@ -24,9 +24,6 @@ const change = document.querySelector('.view-area__change')
 //Create const for book
 const book = document.querySelectorAll('.book')
 
-
-changeButton()
-
 //listener for done book btn
 function doneButton() {
     const doneBtn = document.querySelectorAll('.done-btn');
@@ -226,9 +223,6 @@ function localStorageDragNDrop() {
         let favWr = document.querySelector('.books__fav');
         let mainWr = document.querySelector('.books__list');
 
-
-        console.log(favWr, mainWr)
-
         favWr.innerHTML = ''
         mainWr.innerHTML = ''
 
@@ -245,9 +239,8 @@ function localStorageDragNDrop() {
         createHeaders('Список книг','list__title title', mainWr);
 
         delButton()
-            doneButton() 
-            changeButton()
-            readButton()
+        doneButton() 
+        readButton()
 }
 
 function createHeaders(text, className, parent) {
@@ -266,7 +259,6 @@ function readButton() {
 
     readBtn.forEach((btn) => {
         btn.addEventListener('click', (event) => {
-
             change.classList.add('disable');
             read.classList.remove('disable');
 
@@ -306,8 +298,6 @@ function delButton() {
             read.classList.add('disable');
 
             let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-
-            console.log(event.target.parentNode)
             let index;
 
             dataValues.forEach((el, i) => {
@@ -328,22 +318,30 @@ function delButton() {
 }
 
 //Listener for change book btn
+
+
 function changeButton() {
-    const changeBtn = document.querySelectorAll('.change-btn');
+    
     const changeTitle = document.querySelector('.view-area__change-headline');
     const changeText = document.querySelector('.view-area__change-text');
-
-    const saveChangeBtn = document.querySelector('.viev-area__btn')
+    const saveChangeBtn = document.querySelector('.view-area__btn');
 
     
-    changeBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
+        const bookList = document.querySelector('.list__container');
+        let targetElement;
+        let index;
+    
+        bookList.addEventListener('click', (event) => {
+            if(bookList.classList.contains('favorite__container')) { return }
+
+            if(event.target.className != 'book__btn btn change-btn') { return }
+
+            targetElement = event.target.parentNode.parentNode;
+
             change.classList.remove('disable');
             read.classList.add('disable');
 
             let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-            let book = event.target.parentNode.parentNode.parentNode;
-            let index;
 
             dataValues.forEach((el, i) => {
                 if(el.name == nameBook) {
@@ -351,23 +349,90 @@ function changeButton() {
                 }
             })
 
-            changeTitle.value = nameBook
-            changeText.textContent = dataValues[index].file
+            changeTitle.value = nameBook;
+            changeText.textContent = dataValues[index].file;         
+        
 
-            saveChangeBtn.addEventListener('click', () => {
-               dataValues[index].name = changeTitle.value;
-               dataValues[index].file = changeText.textContent;
+        saveChangeBtn.addEventListener('click', () => {
+                //get data for change book
+                dataValues[index].name = changeTitle.value;
+                dataValues[index].file = changeText.value;
 
-               localStorage.setItem('values', JSON.stringify(dataValues))
-               book.innerHTML = `<p class="list__drop-area drop-area">Drop down area</p>`
+                let books = document.querySelectorAll('.list__container');
 
-               localStorageRun()
-               
+                localStorage.setItem('values', JSON.stringify(dataValues));
+
+                books.forEach(el => {
+                    el.innerHTML = ''
+                })
+
+                let paragraph = document.createElement('p');
+                paragraph.className = 'list__drop-area drop-area';
+                paragraph.textContent = 'Drop down area';
+                books[0].append(paragraph)
+                localStorageRun()
             })
-            
         })
-    } ) 
 }
+
+//change book from favorite container
+/*
+
+function changeFavoriteBook() {
+
+    console.log('vaf')
+    const changeTitle = document.querySelector('.view-area__change-headline');
+    const changeText = document.querySelector('.view-area__change-text');
+    const saveChangeBtn = document.querySelector('.view-area__btn');
+
+    const bookList = document.querySelector('.favorite__container');
+    let targetElement;
+    
+    let oldName;
+
+    bookList.addEventListener('click', (event) => {
+        if(bookList.classList.contains('list__container')) { return }
+        if(event.target.className != 'book__btn btn change-btn') { return }
+
+        targetElement = event.target.parentNode.parentNode;
+
+        change.classList.remove('disable');
+        read.classList.add('disable');
+
+        let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
+
+        let index;
+
+        dataValues.forEach((el, i) => {
+            if(el.name == nameBook) {
+                index = i;
+            }
+        })
+
+        
+        changeTitle.value = nameBook;
+        changeText.textContent = dataValues[index].file;  
+
+        oldName = targetElement.childNodes[0];
+
+        saveChangeBtn.addEventListener('click', () => {
+            if(bookList.classList.contains('list__container')) { return }
+           
+            //get data for change book
+            dataValues[index].name = changeTitle.value;
+            dataValues[index].file = changeText.value;
+
+            localStorage.setItem('values', JSON.stringify(dataValues));
+
+            oldName.textContent = changeTitle.value
+
+            startLocalDragNdrop()
+        })
+    })
+}
+*/
+
+// Drag and drop
 
 function dragNDrop() {
     const container = document.querySelectorAll('.drop-area');
@@ -405,15 +470,15 @@ function dragNDrop() {
                 this.before(draggedItem);
 
                 startLocalDragNdrop()
-                
             })
-            
         }
-    }    
-    
+    }     
 }
 
+
 dragNDrop()
+
+//save favorite and main block to localstorage
 
 function startLocalDragNdrop() {
     let favorite = document.querySelector('.favorite__container'),
