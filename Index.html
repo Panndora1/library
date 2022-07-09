@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en, ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body class="body">
+    <main class="lib">
+        <article class="books">
+            <section class="books__fav favorite">
+                <h2 class="favorite__title title">Любимые книги</h2>
+                <div class="favorite__container container">
+                    <p class="favorite__drop-area drop-area">Drop down area</p>
+                </div>
+            </section>
+            <section class="books__list list">
+                <h2 class="list__title title">Список книг</h2>
+                <div class="list__container container">
+                    <p class="list__drop-area drop-area">Drop down area</p>
+                </div>
+            </section>
+            <section class="books__add add">
+                <h2 class="add__title title">Добавить книгу</h2>
+                <div class="add__form form">
+                    <div class="form__radio-wr">
+                        <input type="radio" name="form" id="download" class="form__radio download" checked>
+                        <label for="download">Загрузить книгу</label>
+                    </div>
+                    <div class="form__radio-wr">
+                        <input type="radio" name="form" id="selfload" class="form__radio selfload">
+                        <label for="selfload">Написать самому</label>
+                    </div>
+                    <p class="form__text">Название:</p>
+                    <form class="form__selfload  disable" id="form__selfload" name="form__selfload" action="/" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" value="" placeholder="Заголовок">
+                        <input type="text" class="form__desc" name="file" value="" placeholder="Описание">
+                        <button type="submit" class="form__btn btn">Загрузить</button>
+                    </form>
+                    <form class="form__download" id="form__download" name="form" action="/" method="POST" enctype="multipart/form-data">
+                        <input type="text" class="form__name" name="login" value="" placeholder="Заголовок">
+                        <input type="file" class="form__file" name="file" value="" id="file">
+                        <button type="submit" class="form__btn btn">Загрузить</button>
+                    </form>
+                    
+
+                </div>
+            </section>
+        </article>
+        <aside class="view-area">
+            <!--Код вставляется когда нажата кнопка "читать книгу"-->
+            <div class="view-area__read disable">
+                <h1 class="view-area__title title"></h1>
+                <p class="view-area__text" ></p>
+            </div>
+            <!--Код вставляется когда нажата кнопка "редактировать книгу"-->
+            <div class="view-area__change disable">
+                <input type="text" class="view-area__change-headline">
+                <textarea type="text" class="view-area__change-text" rows="8"></textarea>
+                <button class="view-area__btn btn">Сохранить</button>
+            </div>
+        </aside>
+    </main>
+    <script src="./script.js" charset="utf-8"></script>
+</body>
+</html>
