@@ -22,28 +22,14 @@ const read = document.querySelector('.view-area__read');
 const change = document.querySelector('.view-area__change')
 
 //Create const for book
-const book = document.querySelectorAll('.book')
-
-//listener for done book btn
-function doneButton() {
-    const doneBtn = document.querySelectorAll('.done-btn');
-
-    doneBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.textContent = 'Прочитал';
-            btn.parentNode.parentNode.style.backgroundColor = '#00f'
-        })
-    })
-}
+const books = document.querySelectorAll('.book');
 
 // data
-
 let dataLoad = []
 let arr = []
 let arrValues;
 
 // Upload files
-
 function upload(selector, options) {
     const input = document.querySelector(selector);
 
@@ -52,9 +38,7 @@ function upload(selector, options) {
     }
 
     const changeHandler = (event) => {
-        if (!event.target.files.length) {
-            return
-        }
+        if (!event.target.files.length) { return }
     }
 
     input.addEventListener('change', changeHandler);
@@ -65,13 +49,9 @@ upload('#file', {
     accept: '.txt'
 })
 
-
 //API url
 
 const requestURL = 'https://apiinterns.osora.ru/';
-
-
-//upload data from form to book area
 
 const formDownload = document.getElementById('form__download');
 const formSelfload = document.getElementById('form__selfload');
@@ -80,41 +60,33 @@ let dataValues = [];
 let containers = {}
 let booksArea;
 
-class retriveFormValue {
-    constructor(form) {
-        this.form = form
+function getData(name, file) {
+
+    let values = {}
+
+    values = {
+        name: name.value,
+        file: file.value || file.text
     }
 
-    getData(name, file) {
-
-        let values = {}
-
-        values = {
-            name: name.value,
-            file: file.value || file.text
-        }
-
-        if (dataValues == null) {
-            dataValues = []
-        }
-    
-        dataValues.push(values)
-        localStorage.setItem('values', JSON.stringify(dataValues));
-
-        createBook(values.name)
-
+    if (dataValues == null) {
+        dataValues = []
     }
 
-    postRequest(name, fileField) {
-   
-        const formData = new FormData();
-   
-        formData.append('login', name.value);
-        formData.append('file', fileField.files[0]);
-   
-        sendRequest("POST", requestURL, formData)
-    }
+    dataValues.push(values)
+    localStorage.setItem('values', JSON.stringify(dataValues));
 
+    //createBook(values.name)
+}
+
+function postRequest(name, fileField) {
+   
+    const formData = new FormData();
+
+    formData.append('login', name.value);
+    formData.append('file', fileField.files[0]);
+
+    sendRequest("POST", requestURL, formData)
 }
 
 // FETCH function
@@ -128,10 +100,9 @@ function sendRequest(method, url, body = null) {
         return response.json()
     }).then((data) => {
         const name = formDownload.querySelector('[name="login"]')
-        new retriveFormValue(formDownload).getData(name, data);
+        getData(name, data);
     })
 }
-
 
 // create book
 
@@ -152,12 +123,12 @@ function createBook(log) {
             bookOne.append(div)
 
             let classBtns = ["book__btn btn change-btn", "book__btn btn done-btn", "book__btn btn read-btn book__btn_readable", "book__btn btn del-btn"]
-            let textBtns = ['Ред.', 'Прочитана', 'Читать', 'Х']
+            //let textBtns = ['Ред.', 'Прочитана', 'Читать', 'Х']
 
             for (let i = 0;  i < 4; i++) {
                 let btn = document.createElement('button');
                 btn.className = classBtns[i];
-                btn.textContent = textBtns[i];
+                //btn.textContent = textBtns[i];
 
                 div.append(btn)
             }
@@ -176,13 +147,22 @@ function createBook(log) {
 }
 
 
+//get data from forms
 formDownload.addEventListener('submit', (event) => {
     event.preventDefault()
 
     const name = formDownload.querySelector('[name="login"]')
     const fileField = formDownload.querySelector('[name="file"]')
 
-    new retriveFormValue(formDownload).postRequest(name, fileField);
+    postRequest(name, fileField);
+
+    createBook(name.value)
+
+    startLocalDragNdrop()
+    localStorageDragNDrop()
+    
+    dragNDrop() 
+    
 })
 
 formSelfload.addEventListener('submit', (event) => {
@@ -191,23 +171,20 @@ formSelfload.addEventListener('submit', (event) => {
     const name = formSelfload.querySelector('[name="login"]')
     const file = formSelfload.querySelector('[name="file"]')
 
-    new retriveFormValue(formSelfload).getData(name, file);
+    getData(name, file);
+    
+    createBook(name.value)
+
+    startLocalDragNdrop()
+    localStorageDragNDrop()
+
+    dragNDrop() 
+    
 })
 
-
-
 // LOCALSTORAGE
-
 function localStorageRun() {
     dataValues = JSON.parse(localStorage.getItem('values'));
-
-    dataValues.forEach((el) => {
-        if(el.name != null) {
-            createBook(el.name)
-        }
-    
-    }) 
-    
 }
 
 localStorageRun()
@@ -216,33 +193,47 @@ if (localStorage.containers != undefined) {
     localStorageDragNDrop()
 }
 
+//localstorage drag and drop
 function localStorageDragNDrop() {
     let containersValue = JSON.parse(localStorage.getItem('containers'));
 
+    let favWr = document.querySelector('.books__fav');
+    let mainWr = document.querySelector('.books__list');
 
-        let favWr = document.querySelector('.books__fav');
-        let mainWr = document.querySelector('.books__list');
+    favWr.innerHTML = ''
+    mainWr.innerHTML = ''
 
-        favWr.innerHTML = ''
-        mainWr.innerHTML = ''
+    mainWr.innerHTML = containersValue.main;
+    favWr.innerHTML = containersValue.fav;
 
-        mainWr.innerHTML = containersValue.main;
-        favWr.innerHTML = containersValue.fav;
+    let books = document.querySelectorAll('.book');
+    books.forEach(el => {
+        el.classList.remove('hide')
+    })
 
-        let books = document.querySelectorAll('.book');
-        books.forEach(el => {
-            el.classList.remove('hide')
-        })
+    createHeaders('Любимые книги', 'favorite__title title', favWr);
+    createHeaders('Список книг','list__title title', mainWr);
 
-
-        createHeaders('Любимые книги', 'favorite__title title', favWr);
-        createHeaders('Список книг','list__title title', mainWr);
-
-        delButton()
-        doneButton() 
-        readButton()
+    delButton()
+    doneButton() 
+    readButton()
+    changeButton()
 }
 
+//save favorite and main block to localstorage
+function startLocalDragNdrop() {
+    let favorite = document.querySelector('.favorite__container'),
+        main = document.querySelector('.list__container');     
+        
+    containers = {
+        fav: favorite.outerHTML,
+        main: main.outerHTML
+    }
+    
+    localStorage.setItem('containers', JSON.stringify(containers))
+}
+
+//create headers for book containers
 function createHeaders(text, className, parent) {
     let header = document.createElement('h2');
     header.className = className;
@@ -251,189 +242,7 @@ function createHeaders(text, className, parent) {
     parent.prepend(header)
 }
 
-//Listener for read book btn
-function readButton() {
-    const readBtn = document.querySelectorAll('.book__btn_readable');
-    const viewTitle = document.querySelector('.view-area__title')
-    const viewText = document.querySelector('.view-area__text')
-
-    readBtn.forEach((btn) => {
-        btn.addEventListener('click', (event) => {
-            change.classList.add('disable');
-            read.classList.remove('disable');
-
-            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-
-            viewTitle.textContent = nameBook;
-
-            let index;
-
-            dataValues.forEach((el, i) => {
-                if(el.name == nameBook) {
-                    index = i;
-                }
-            })
-
-            let fileName = dataValues[index].file;
-            
-            if(fileName.includes('.txt')) {
-                console.log(arr)
-                viewText.textContent = arr[index];
-            } else {
-                viewText.textContent = dataValues[index].file;
-            }
-        })        
-    })
-}
-
-
-//listener for delete book btn
-function delButton() {
-    const delBtn = document.querySelectorAll('.del-btn');
-
-    delBtn.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.parentNode.parentNode.classList.add('disable');
-            change.classList.add('disable');
-            read.classList.add('disable');
-
-            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-            let index;
-
-            dataValues.forEach((el, i) => {
-                if(el.name == nameBook) {
-                    index = i;
-                }
-            })
-
-            dataValues[index].name = null;
-            dataValues[index].file = null;
-
-            localStorage.setItem('values', JSON.stringify(dataValues))
-            startLocalDragNdrop()
-
-        })
-    })
-
-}
-
-//Listener for change book btn
-
-
-function changeButton() {
-    
-    const changeTitle = document.querySelector('.view-area__change-headline');
-    const changeText = document.querySelector('.view-area__change-text');
-    const saveChangeBtn = document.querySelector('.view-area__btn');
-
-    
-        const bookList = document.querySelector('.list__container');
-        let targetElement;
-        let index;
-    
-        bookList.addEventListener('click', (event) => {
-            if(bookList.classList.contains('favorite__container')) { return }
-
-            if(event.target.className != 'book__btn btn change-btn') { return }
-
-            targetElement = event.target.parentNode.parentNode;
-
-            change.classList.remove('disable');
-            read.classList.add('disable');
-
-            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-
-            dataValues.forEach((el, i) => {
-                if(el.name == nameBook) {
-                    index = i;
-                }
-            })
-
-            changeTitle.value = nameBook;
-            changeText.textContent = dataValues[index].file;         
-        
-
-        saveChangeBtn.addEventListener('click', () => {
-                //get data for change book
-                dataValues[index].name = changeTitle.value;
-                dataValues[index].file = changeText.value;
-
-                let books = document.querySelectorAll('.list__container');
-
-                localStorage.setItem('values', JSON.stringify(dataValues));
-
-                books.forEach(el => {
-                    el.innerHTML = ''
-                })
-
-                let paragraph = document.createElement('p');
-                paragraph.className = 'list__drop-area drop-area';
-                paragraph.textContent = 'Drop down area';
-                books[0].append(paragraph)
-                localStorageRun()
-            })
-        })
-}
-
-//change book from favorite container
-/*
-
-function changeFavoriteBook() {
-
-    console.log('vaf')
-    const changeTitle = document.querySelector('.view-area__change-headline');
-    const changeText = document.querySelector('.view-area__change-text');
-    const saveChangeBtn = document.querySelector('.view-area__btn');
-
-    const bookList = document.querySelector('.favorite__container');
-    let targetElement;
-    
-    let oldName;
-
-    bookList.addEventListener('click', (event) => {
-        if(bookList.classList.contains('list__container')) { return }
-        if(event.target.className != 'book__btn btn change-btn') { return }
-
-        targetElement = event.target.parentNode.parentNode;
-
-        change.classList.remove('disable');
-        read.classList.add('disable');
-
-        let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
-
-        let index;
-
-        dataValues.forEach((el, i) => {
-            if(el.name == nameBook) {
-                index = i;
-            }
-        })
-
-        
-        changeTitle.value = nameBook;
-        changeText.textContent = dataValues[index].file;  
-
-        oldName = targetElement.childNodes[0];
-
-        saveChangeBtn.addEventListener('click', () => {
-            if(bookList.classList.contains('list__container')) { return }
-           
-            //get data for change book
-            dataValues[index].name = changeTitle.value;
-            dataValues[index].file = changeText.value;
-
-            localStorage.setItem('values', JSON.stringify(dataValues));
-
-            oldName.textContent = changeTitle.value
-
-            startLocalDragNdrop()
-        })
-    })
-}
-*/
-
 // Drag and drop
-
 function dragNDrop() {
     const container = document.querySelectorAll('.drop-area');
     const books = document.querySelectorAll('.book');
@@ -475,19 +284,128 @@ function dragNDrop() {
     }     
 }
 
-
 dragNDrop()
 
-//save favorite and main block to localstorage
+//BUTTONS
 
-function startLocalDragNdrop() {
-    let favorite = document.querySelector('.favorite__container'),
-        main = document.querySelector('.list__container');     
-        
-    containers = {
-        fav: favorite.outerHTML,
-        main: main.outerHTML
-    }
+//listener for done book btn
+function doneButton() {
+    const doneBtn = document.querySelectorAll('.done-btn');
+
+    doneBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('check');
+            btn.parentNode.parentNode.classList.toggle('done')
+
+            startLocalDragNdrop()
+        })
+    })
+}
+
+//listener for delete book btn
+function delButton() {
+    const delBtn = document.querySelectorAll('.del-btn');
+
+    delBtn.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.parentNode.parentNode.classList.add('disable');
+            change.classList.add('disable');
+            read.classList.add('disable');
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
+            let index;
+
+            dataValues.forEach((el, i) => {
+                if(el.name == nameBook) {
+                    index = i;
+                }
+            })
+
+            dataValues[index].name = null;
+            dataValues[index].file = null;
+
+            localStorage.setItem('values', JSON.stringify(dataValues))
+            startLocalDragNdrop()
+        })
+    })
+}
+
+//Listener for read book btn
+function readButton() {
+    const readBtn = document.querySelectorAll('.book__btn_readable');
+    const viewTitle = document.querySelector('.view-area__title')
+    const viewText = document.querySelector('.view-area__text')
+
+    readBtn.forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+            change.classList.add('disable');
+            read.classList.remove('disable');
+
+            let nameBook = event.target.parentNode.parentNode.childNodes[0].textContent;
+
+            viewTitle.textContent = nameBook;
+
+            let index;
+
+            dataValues.forEach((el, i) => {
+                if(el.name == nameBook) {
+                    index = i;
+                }
+            })
+
+            let fileName = dataValues[index].file;
+            
+            if(fileName.includes('.txt')) {
+                console.log(arr)
+                viewText.textContent = arr[index];
+            } else {
+                viewText.textContent = dataValues[index].file;
+            }
+        })        
+    })
+}
+
+function changeButton() {
     
-    localStorage.setItem('containers', JSON.stringify(containers))
+    const changeTitle = document.querySelector('.view-area__change-headline');
+    const changeText = document.querySelector('.view-area__change-text');
+    const saveChangeBtn = document.querySelector('.view-area__btn');
+
+    const changeBtn = document.querySelectorAll('.change-btn');
+    let index;
+
+    changeBtn.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            change.classList.remove('disable');
+            read.classList.add('disable');
+
+            index = i;
+
+            //display initial values
+            dataValues.forEach(obj => {
+                if(obj.name === btn.parentNode.parentNode.childNodes[0].textContent) {
+                    changeTitle.value = obj.name
+                    changeText.textContent = obj.file
+                }
+            })
+        })
+    })
+
+    saveChangeBtn.addEventListener('click', () => {
+        const books = document.querySelectorAll('.book');
+        const title = changeTitle.value
+        const desc = changeText.value
+
+        dataValues.forEach(obj => {
+            if(obj.name === books[index].childNodes[0].textContent) {
+                obj.name = title
+                obj.file = desc
+            }
+        })
+
+        books[index].childNodes[0].textContent = title
+
+        localStorage.setItem('values', JSON.stringify(dataValues));
+        startLocalDragNdrop()
+    })
 }
